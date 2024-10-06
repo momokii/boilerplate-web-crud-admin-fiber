@@ -1,0 +1,37 @@
+{{template "components/_header" .}}
+
+<div class="bg-body-tertiary min-vh-100 d-flex align-items-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="clearfix text-center">
+          <h1 class="display-3">{{ .Code }}</h1>
+          <h4 class="pt-3">Houston, we have a problem!</h4>
+          <p class="text-body-secondary">{{ .Error }}</p>
+        </div>
+        <div class="text-center mt-4">
+          <a class="btn btn-info" href="/">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CoreUI and necessary plugins-->
+<script src="./web/vendors/@coreui/coreui/js/coreui.bundle.min.js"></script>
+<script src="./web/vendors/simplebar/js/simplebar.min.js"></script>
+<script>
+  const header = document.querySelector('header.header');
+
+  document.addEventListener('scroll', () => {
+    if (header) {
+      header.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0);
+    }
+  });
+</script>
+<script>
+</script>
+
+</body>
+
+</html>

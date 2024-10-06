@@ -1,0 +1,266 @@
+{{template "components/_header" .}}
+{{template "components/_sidebar" .}}
+<div class="wrapper d-flex flex-column min-vh-100">
+    {{template "components/_navbar" .}}
+    <div class="body flex-grow-1">
+        <div class="container-lg px-4">
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8 tab-content">
+                    <div class="card shadow-lg border-0 mt-5">
+                        <div class="card-header bg-gradient-primary text-white text-center py-4">
+                            <h3 class="mb-0 text-dark">User Profile</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-person-circle" style="font-size: 80px; color: #6c757d;"></i>
+                            </div>
+                            <div class="mb-3">
+                                <h5 class="text-center">
+                                    <strong>Username:</strong> <span class="text-muted">{{ .User.Username }}</span>
+                                </h5>
+                            </div>
+                            <div class="mb-4 text-center">
+                                <h5>
+                                    <strong>Role:</strong>
+                                    <span class="badge bg-info rounded-pill px-3 py-2">
+                                        {{ if eq .User.Role 1 }}
+                                        Admin
+                                        {{ else if eq .User.Role 2  }}
+                                        User
+                                        {{ else if eq .User.Role 3  }}
+                                        Super Admin
+                                        {{ end }}
+                                    </span>
+                                </h5>
+                            </div>
+                            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                                <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#editUserModal">
+                                    Edit Data
+                                </button>
+
+                                <button type="button" class="btn btn-warning mb-2" data-bs-toggle="modal" data-bs-target="#editUserPassModal">
+                                    Edit Password
+                                </button>
+                            </div>
+                        </div>
+                        <!-- <div class="card-footer bg-light text-center py-3">
+                            <small class="text-muted">Last updated: {{ .LastUpdated }}</small>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">User Edit</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editUserForm">
+                                <input type="hidden" id="userId" name="userId" value="{{.User.Id}}">
+                                <div class="mb-3">
+                                    <label for="username" class="col-form-label">Username Baru: </label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                        value="{{.User.Username}}" minlength="5">
+                                </div>
+                                <input id="role" name="role" type="hidden" value="{{.User.Role}}">
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Edit Akun</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- EDIT PASSWORD -->
+            <div class="modal fade" id="editUserPassModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Ganti Password</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editUserPassForm">
+                                <input type="hidden" id="userIdPass" name="userIdPass" value="{{.User.Id}}">
+                                <div class="mb-3">
+                                    <label for="password" class="col-form-label">Password Sekarang:</label>
+                                    <input type="password" class="form-control" id="password_now"
+                                        name="password_now"></input>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="col-form-label">Password Baru:</label>
+                                    <input type="password" class="form-control" id="password"
+                                        name="password" minlength="6"></input>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password_confirm" class="col-form-label">Password Baru
+                                        Konfirmasi:</label>
+                                    <input type="password" class="form-control" id="password_confirm"
+                                        name="password_confirm" minlength="6"></input>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Konfirmasi Ganti Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{ template "components/_modal-infor" .}}
+
+
+        </div>
+    </div>
+    {{ template "components/_loading" . }}
+    {{ template "components/_footer-one" . }}
+
+
+    <script>
+        const token = getCookie('token')
+        const modal = new bootstrap.Modal(document.getElementById('infoModal'))
+        const modalData = document.getElementById("modalMessage") // data showed from modal abov
+        const loading = document.getElementById('loadingModal')
+        loading.style.display = 'none'
+
+
+        $(document).ready(function () {
+
+
+            // ===================== EDIT USER =======================================
+            $('#editUserForm').on('submit', function (event) {
+                event.preventDefault();
+
+                loading.style.display = 'flex'
+
+                let userId = $('#editUserForm #userId').val();
+                const username = $('#editUserForm #username').val()
+
+                if (username.length < 5) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Username minimal 5 karakter dan berupa alpanumerik</b>";
+                    modal.show()
+                    return
+                }
+
+                var formData = new FormData(this);
+
+                $('#editUserModal').modal('hide');
+
+                fetch('/api/users/' + userId, {
+                        method: 'PATCH',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            role: parseInt($('#editUserForm #role').val())
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.error) {
+                            modalData.innerHTML =
+                                "<b class='text-dark'> Berhasil Edit Data User </b>"
+                            modal.show()
+
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1000)
+                        } else {
+                            modalData.innerHTML = "<b class='text-danger'> Gagal Edit Data User: " +data.message + "</b>";
+
+                            modal.show()
+                        }
+                    })
+                    .catch(error => {
+                        $('#modalData').html("<b class='text-danger'>Terjadi kesalahan: " + error
+                            .message + "</b>");
+                        $('#modal').modal('show');
+                    })
+                    .finally(() => {
+                        loading.style.display = 'none'
+                    });
+            });
+
+
+
+            // ===================== EDIT PASSWORD =======================================
+            $('#editUserPassForm').on('submit', function (event) {
+                event.preventDefault();
+
+                loading.style.display = 'flex'
+
+                let userId = $('#editUserPassForm #userIdPass').val();
+                const password_now = $('#editUserPassForm #password_now').val()
+                const password = $('#editUserPassForm #password').val()
+                const password_confirm = $('#editUserPassForm #password_confirm').val()
+
+                if (password.length < 6) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Password minimal 6 karakter</b>";
+                    modal.show()
+                    return
+                }
+
+                if (password !== password_confirm) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Password dan Password Konfirmasi tidak sama</b>";
+                    modal.show()
+                    return
+                }
+
+                var formData = new FormData(this);
+
+                $('#editUserPassModal').modal('hide');
+
+                fetch('/api/users/' + userId + '/password', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: 'Bearer ' + token
+                        },
+                        body: JSON.stringify({
+                            id: parseInt(userId),
+                            old_password: password_now,
+                            password: password
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.error) {
+                            modalData.innerHTML =
+                                "<b class='text-dark'> Berhasil Ubah Password User</b>"
+                            modal.show()
+
+                        } else {
+                            modalData.innerHTML = "<b class='text-danger'> Gagal Ubah Password User: " +data.message + "</b>";
+
+                            modal.show()
+                        }
+                    })
+                    .catch(error => {
+                        $('#modalData').html("<b class='text-danger'>Terjadi kesalahan: " + error
+                            .message + "</b>");
+                        $('#modal').modal('show');
+                    })
+                    .finally(() => {
+                        loading.style.display = 'none'
+                    });
+            });
+
+        });
+    </script>
+    {{ template "components/_footer-two" . }}

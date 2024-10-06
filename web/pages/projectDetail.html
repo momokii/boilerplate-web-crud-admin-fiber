@@ -1,0 +1,1239 @@
+{{template "components/_header" .}}
+{{template "components/_sidebar" .}}
+<div class="wrapper d-flex flex-column min-vh-100">
+    {{template "components/_navbar" .}}
+    <div class="body flex-grow-1">
+        <div class="container-lg px-4">
+
+            <div class="row">
+                <div class="col-lg-12 tab-content">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Project Detail</h4>
+
+                            {{ if eq .User.Role 1 }}
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <button type="button" class="btn btn-warning mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#editProjectModal">Edit
+                                        Project</button>
+                                </div>
+                            </div>
+                            {{ end }}
+
+                            <div class="container my-4">
+                                <!-- Informasi Proyek -->
+                                <div class="row">
+                                    <div class="col-lg-12 mb-4">
+                                        <h3 class="text-center">Detail Proyek</h3>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <h6><strong>Nama Project:</strong></h6>
+                                        <p id="projectName">-</p>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <h6><strong>Deskripsi Project:</strong></h6>
+                                        <div class="mt-2">
+                                            <pre id="projectDescription">-</pre>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <h6><strong>Status Project:</strong></h6>
+                                        <p id="projectStatus">-</p>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <h6><strong>Budget:</strong></h6>
+                                        <p id="projectBudget">Rp -</p>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <h6><strong>Tanggal Mulai:</strong></h6>
+                                        <p id="projectStartDate">-</p>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <h6><strong>Tanggal Selesai:</strong></h6>
+                                        <p id="projectEndDate">-</p>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <h6><strong>Created By:</strong></h6>
+                                        <p id="createdBy">-</p>
+                                    </div>
+                                </div>
+                            
+                                <!-- Statistik Proyek -->
+                                <div class="row my-4">
+                                    <div class="col-lg-12 mb-4">
+                                        <h3 class="text-center">Statistik Keuangan</h3>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Pengeluaran Harian Rata-rata:</strong></h6>
+                                                <p id="avgDailyExpense">Rp 0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Pendapatan Harian Rata-rata:</strong></h6>
+                                                <p id="avgDailyIncome">Rp 0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Total Saldo:</strong></h6>
+                                                <p id="balance">Rp 0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Total Pengeluaran:</strong></h6>
+                                                <p id="totalExpense">Rp 0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Total Pendapatan:</strong></h6>
+                                                <p id="totalIncome">Rp 0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Hari Pengeluaran Tertinggi:</strong></h6>
+                                                <p id="highestExpenseDay">-</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Hari Pendapatan Tertinggi:</strong></h6>
+                                                <p id="highestIncomeDay">-</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Persentase Penggunaan Anggaran:</strong></h6>
+                                                <p id="budgetUsagePercentage">0%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body text-center">
+                                                <h6><strong>Total Hari Kerja:</strong></h6>
+                                                <p id="totalWorkingDays">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tempat untuk Chart -->
+                                <div class="row my-5">
+                                    <div class="col-lg-12 mb-4">
+                                        <h3 class="text-center">Grafik Proyek</h3>
+                                    </div>
+
+                                    <!-- Chart 1 -->
+                                    <div class="col-lg-6 mb-4">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <h6 class="text-center"><strong>Saldo Cumulative</strong></h6>
+                                                <canvas id="chart1"></canvas> <!-- Tempat untuk chart pertama -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Chart 2 -->
+                                    <div class="col-lg-6 mb-4">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <h6 class="text-center"><strong>Expense Vs Income</strong></h6>
+                                                <canvas id="chart2"></canvas> <!-- Tempat untuk chart kedua -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Chart 3 -->
+                                    <div class="col-lg-4 mb-4 mx-auto">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <h6 class="text-center"><strong>Penggunaan Anggaran Terhadap Budget</strong></h6>
+                                                <canvas id="chart3"></canvas> <!-- Tempat untuk chart ketiga -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {{ if eq .User.Role 1 }}
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#createDailyLog">Create
+                                        Log</button>
+                                </div>
+                            </div>
+                            {{ end }}
+
+                            <!-- TABEL FILTERING UTAMA -------------------------------------------- -->
+                            <div class="row mb-3">
+                                <div class="col-lg-3">
+                                    <label for="fromDate" class="form-label">From Date</label>
+                                    <input type="date" id="fromDate" class="form-control" placeholder="From Date">
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="toDate" class="form-label">To Date</label>
+                                    <input type="date" id="toDate" class="form-control" placeholder="To Date">
+                                </div>
+                            </div>
+
+
+                            <!-- TABEL UTAMA -------------------------------------------- -->
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="tableDailyLogs">
+                                    <thead>
+                                        <tr>
+                                            <th>Tanggal Log</th>
+                                            <th>Pemasukan</th>
+                                            <th>Pengeluaran</th>
+                                            <th>Description</th>
+                                            <th>Issues</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{ template "components/_modal-infor" .}}
+
+            {{ if eq .User.Role 1 }}
+            <!-- EDIT Project MODAL -->
+            <div class="modal fade" id="editProjectModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Project</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProjectForm">
+                                <input type="hidden" id="projectId" name="projectId">
+
+                                <div class="mb-3">
+                                    <label for="name" class="col-form-label">Nama Project</label>
+                                    <input type="text" class="form-control" id="name" name="name" minlength="5">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="col-form-label">Deskripsi:</label>
+                                    <textarea name="description" id="description" minlength="5" class="form-control" rows="4"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="status" class="col-form-label">Status:</label>
+                                    <select id="status" name="status" class="form-select text-dark">
+                                        <option value="1">Not Started</option>
+                                        <option value="2">On-Going</option>
+                                        <option value="3">Done</option>
+                                        <option value="4">Pending</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="budget" class="col-form-label">Budget:</label>
+                                    <input type="number" class="form-control" id="budget" name="budget" required
+                                        min="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="start_date" class="col-form-label">Start Date:</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="end_date" class="col-form-label">End Date:</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date">
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Edit Project</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- CREATE Logs MODAL -->
+            <div class="modal fade" id="createDailyLog" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Buat Log Harian</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editDailyLogForm">
+                                <input type="hidden" id="projectId" name="projectId">
+                                <div class="mb-3">
+                                    <label for="start_date" class="col-form-label">Tanggal:</label>
+                                    <input type="date" class="form-control" id="date" name="date" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description_log" class="col-form-label">Deskripsi:</label>
+                                    <textarea class="form-control" id="description_log" name="description_log" minlength="5" rows="4"></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="issues" class="col-form-label">Permasalahan:</label>
+                                    <textarea class="form-control" id="issues" name="issues" rows="4"></textarea>
+                                </div>
+                                
+
+                                <div class="mb-3">
+                                    <label for="income" class="col-form-label">Pemasukan:</label>
+                                    <input type="number" class="form-control" id="income" name="income" required min="0"
+                                        value="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="expense" class="col-form-label">Pengeluaran:</label>
+                                    <input type="number" class="form-control" id="expense" name="expense" required
+                                        min="0" value="0">
+                                </div>
+
+                                <div>
+                                    <label for="file" class="col-form-label">File</label>
+                                    <input type="file" class="form-control" id="file" name="file">
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Buat Log</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDIT Logs MODAL -->
+            <div class="modal fade" id="editDailyLog" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Log Harian</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editDailyLogForm">
+                                <input type="hidden" id="logId" name="logId">
+                                <div class="mb-3">
+                                    <label for="start_date" class="col-form-label">Tanggal:</label>
+                                    <input type="date" class="form-control" id="date" name="date" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description_log" class="col-form-label">Deskripsi:</label>
+                                    <textarea class="form-control" id="description_log" name="description_log" minlength="5" rows="4"></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="issues" class="col-form-label">Permasalahan:</label>
+                                    <textarea class="form-control" id="issues" name="issues" rows="4"></textarea>
+                                </div>
+                                
+
+                                <div class="mb-3">
+                                    <label for="income" class="col-form-label">Pemasukan:</label>
+                                    <input type="number" class="form-control" id="income" name="income" required min="0"
+                                        value="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="expense" class="col-form-label">Pengeluaran:</label>
+                                    <input type="number" class="form-control" id="expense" name="expense" required
+                                        min="0" value="0">
+                                </div>
+
+                                <!-- Bagian untuk Upload File -->
+                                <div class="mb-3">
+                                    <label for="file" class="col-form-label">Upload File (jika ada):</label>
+                                    <input type="file" class="form-control" id="file" name="file">
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="submit" id="submitEditLog" class="btn btn-primary">Edit Log</button>
+                                </div>
+                            </form>
+
+                            <!-- Bagian untuk Menampilkan File yang Sudah Ada -->
+                            <div id="existing-file-container" class="mb-3" style="display: none;">
+                                <label for="existingFile" class="col-form-label">File yang Sudah Ada:</label>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="#" id="existingFile" target="_blank"></a>
+                                    <button id="deleteFileBtn" class="btn btn-danger btn-sm">Hapus File</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+
+
+            <!-- DELETE Logs MODAL -->
+            <div class="modal fade" id="deleteDailyLog" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus Logs Data</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger">Konfirmasi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- DELETE Logs FILE MODAL -->
+            <div class="modal fade" id="deleteDailyLogFile" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus Logs File Data</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="confirmDeleteLogsFile" class="btn btn-danger">Konfirmasi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- DETAIL INFO DAILY LOGS -->
+            <div class="modal fade" id="logDetailModal" tabindex="-1" aria-labelledby="logDetailModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="logDetailModalLabel">Log Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Card for Log Details -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-primary text-white">
+                                    <i class="bi bi-calendar3"></i> Log Date: <span class="modal-logdate"></span>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-currency-dollar"></i> Income: </strong>
+                                        <span class="badge bg-success modal-income"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-cash-coin"></i> Expense: </strong>
+                                        <span class="badge bg-danger modal-expense"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-journal-text"></i> Description:</strong>
+                                        <div class="mt-2">
+                                            <pre class="modal-description"></pre>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-exclamation-circle"></i> Issues:</strong>
+                                        <div class="mt-2">
+                                            <pre class="modal-issues"></pre>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item" id="log-file-container">
+                                        <strong><i class="bi bi-file-earmark"></i> Attached File:</strong>
+                                        <div class="mt-2">
+                                            <a href="#" class="modal-file" target="_blank"></a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        
+                            <!-- Card for Meta Information (Created/Updated At) -->
+                            <div class="card">
+                                <div class="card-header bg-secondary text-white">
+                                    <i class="bi bi-info-circle"></i> Log Metadata
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-calendar-check"></i> Created At: </strong>
+                                        <span class="modal-created-at"></span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong><i class="bi bi-calendar-update"></i> Updated At: </strong>
+                                        <span class="modal-updated-at"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    {{ template "components/_loading" . }}
+    {{ template "components/_footer-one" . }}
+
+    <div id="user-data" data-role="{{.User.Role}}"></div>
+    <script>
+        const userRole = parseInt($('#user-data').data('role'))
+        const token = getCookie("token")
+        const modal = new bootstrap.Modal(document.getElementById('infoModal'))
+        const modalData = document.getElementById("modalMessage")
+        const modalDelete = new bootstrap.Modal(document.getElementById('deleteDailyLog'))
+        const loading = document.getElementById('loadingModal')
+
+        loading.style.display = 'none'
+
+        $(document).ready(async function () {
+            let ProjectName
+
+            let url = window.location.pathname.split('/')
+            let projectId = url[url.length - 1]
+
+            if (projectId === "") {
+                window.location.href = "/project"
+            } else {
+                loading.style.display = 'flex'
+
+                // ------------- FETCH PROJECT DETAIL DATA 
+                try {
+                    let projectResponse = await fetch("/api/projects/" + projectId, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    let projectData = await projectResponse.json();
+                    let projectStatus = projectResponse.status;
+
+                    if (projectData.error) {
+                        if (projectStatus === 404 || projectStatus === 401) {
+                            setTimeout(() => {
+                                window.location.href = "/project";
+                            }, 500);
+                        }
+                        modalData.innerHTML = projectData.message;
+                        modal.show();
+                    } else {
+                        let data = projectData.data;
+
+                        let startDate = data.start_date.String === "" ? "-" : formatDate(new Date(data.start_date.String), false);
+                        let endDate = data.end_date.String === "" ? "-" : formatDate(new Date(data.end_date.String), false);
+                        let status = data.status === 1 ? "Not Started" : data.status === 2 ? "On-Going" : data.status === 3 ? "Done" : "Pending";
+
+                        ProjectName = data.name
+
+                        // Update project details in the UI
+                        $('#projectName').text(data.name);
+                        $('#projectDescription').text(data.description);
+                        $('#projectStatus').text(status);
+                        $('#projectStartDate').text(startDate);
+                        $('#projectEndDate').text(endDate);
+                        $('#projectBudget').text("Rp " + formatBudget(data.budget));
+                        $('#createdBy').text(data.created_by_name);
+
+                        // modal edit
+                        $('#editProjectForm #projectId').val(data.id);
+                        $('#editProjectForm #name').val(data.name);
+                        $('#editProjectForm #description').val(data.description);
+                        $('#editProjectForm #status').val((data.status).toString());
+                        $('#editProjectForm #start_date').val((data.start_date.String).split("T")[0]);
+                        $('#editProjectForm #end_date').val((data.end_date.String).split("T")[0]);
+                        $('#editProjectForm #budget').val(data.budget);
+                    }
+
+                    // ===================== FETCH DETAIL PROJECT STATS ==========================
+                    let statsResponse = await fetch("/api/projects/" + projectId + "/stats", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    let statsData = await statsResponse.json();
+                    let statsStatus = statsResponse.status;
+                    
+                    if (statsData.error) {
+                        modalData.innerHTML = "<b class='text-danger'>" + statsData.message + "</b>";
+                        modal.show();
+                    } else {
+                        let stats = statsData.data.projectStats;
+                        let cumStats = statsData.data.projectStatsCum;
+
+                        // Chart labels and data
+                        const label = [];
+                        const income = [];
+                        const expense = [];
+                        const cumSaldo = [];
+
+                        cumStats.map(stat => {
+                            label.push(formatDate(new Date(stat.log_date.String), false));
+                            income.push(stat.income);
+                            expense.push(stat.expense);
+                            cumSaldo.push(stat.cumulative_saldo);
+                        });
+
+                        const highestInDay = stats.highest_income_day.String === "" ? "-" : formatDate(new Date(stats.highest_income_day.String), false);
+                        const highestExDay = stats.highest_expense_day.String === "" ? "-" : formatDate(new Date(stats.highest_expense_day.String), false);
+                        const penggunaanAnggaranPerc = stats.budget_usage_percentage;
+
+                        $("#avgDailyExpense").text("Rp " + formatBudget(stats.avg_daily_expense));
+                        $("#avgDailyIncome").text("Rp " + formatBudget(stats.avg_daily_income));
+                        $("#balance").text("Rp " + formatBudget(stats.balance));
+                        $("#totalExpense").text("Rp " + formatBudget(stats.total_expense));
+                        $("#totalIncome").text("Rp " + formatBudget(stats.total_income));
+                        $("#highestExpenseDay").text(highestExDay);
+                        $("#highestIncomeDay").text(highestInDay);
+                        $("#budgetUsagePercentage").text(penggunaanAnggaranPerc + "%");
+                        $("#totalWorkingDays").text(stats.total_working_days);
+
+                        // Adding charts
+                        const chart1 = document.getElementById("chart1").getContext("2d");
+                        new Chart(chart1, {
+                            type: 'line',
+                            data: {
+                                labels: label,
+                                datasets: [{
+                                    label: "Cumulative",
+                                    data: cumSaldo
+                                }]
+                            }
+                        });
+
+                        const chart2 = document.getElementById("chart2").getContext("2d");
+                        new Chart(chart2, {
+                            type: 'line',
+                            data: {
+                                labels: label,
+                                datasets: [
+                                    {
+                                        label: "Expense",
+                                        data: expense,
+                                        borderColor: "red",
+                                    },
+                                    {
+                                        label: "Income",
+                                        data: income,
+                                        borderColor: "blue",
+                                    }
+                                ]
+                            }
+                        });
+
+                        const expenses_total = stats.total_expense;
+                        const sisa_anggaran = stats.budget - expenses_total;
+                        const chart3 = document.getElementById("chart3").getContext("2d");
+                        new Chart(chart3, {
+                            type: "pie",
+                            options: {
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: "Persentase penggunaan anggaran: " + penggunaanAnggaranPerc + "%"
+                                    },
+                                },
+                            },
+                            data: {
+                                labels: ["Sisa Anggaran", "Total Pengeluaran"],
+                                datasets: [
+                                    {
+                                        label: "Datasets 1",
+                                        data: [sisa_anggaran, expenses_total]
+                                    }
+                                ]
+                            }
+                        });
+                    }
+                } catch (error) {
+
+                    modalData.innerHTML = "<b class='text-danger'>Terjadi kesalahan dalam pengambilan data.</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            }
+
+
+
+
+
+            // ===================== EDIT PROJECT =======================================
+            $('#editProjectForm').on('submit', async function (event) {
+                event.preventDefault();
+
+                loading.style.display = 'flex'
+
+                const projectId = $('#editProjectForm #projectId').val()
+                const name = $('#editProjectForm #name').val()
+                const deskripsi = $('#editProjectForm #description').val()
+                const status = parseInt($('#editProjectForm #status').val())
+                const startDate = $('#editProjectForm #start_date').val()
+                const endDate = $('#editProjectForm #end_date').val()
+                const budget = parseInt($('#editProjectForm #budget').val())
+
+                $('#editProjectModal').modal('hide');
+
+                if ((startDate === "") && (endDate !== "")) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Start Date tidak boleh kosong jika End Date diisi</b>";
+                    modal.show()
+                    return
+                }
+
+                if ((endDate !== "") && (startDate !== "") && (endDate < startDate)) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>End Date tidak boleh lebih kecil dari Start Date</b>";
+                    modal.show()
+                    return
+                }
+
+                try {
+                    const response = await fetch('/api/projects/' + projectId, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            description: deskripsi,
+                            status: status,
+                            budget: budget,
+                            start_date: startDate,
+                            end_date: endDate
+                        }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.error) {
+                        modalData.innerHTML = "<b class='text-dark'> Berhasil Edit Data User </b>";
+                        modal.show();
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        modalData.innerHTML = "<b class='text-danger'> Gagal Edit Data User: " + data.message + "</b>";
+                        modal.show();
+                        $("#createUserModal").modal('show');
+                    }
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'> Terjadi Kesalahan: " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+
+
+
+
+
+            // ===================== TABLE DAILY LOGS =======================================
+            let columns_export = [0, 1, 2, 3, 4]
+            let title = "Daily Logs - " + ProjectName
+            let type = ["copy", "csv", "excel", "pdf", "print"]
+            let buttons = [
+                            type.map(data => {
+                                return {
+                                    extend: data,
+                                    title: title,
+                                    exportOptions: {
+                                        columns: columns_export
+                                    },
+                                    customize: function (doc) {
+                                        // Pengaturan untuk PDF
+                                        if (data === 'pdf') {
+                                            doc.styles.tableHeader = {
+                                                fillColor: '#4CAF50', // Ubah warna header
+                                                color: 'white', // Warna teks di header
+                                                alignment: 'center'
+                                            };
+                                            doc.defaultStyle.fontSize = 10; // Sesuaikan ukuran font
+                                            doc.content[1].table.widths = ['20%', '20%', '20%', '20%', '20%']; // Ubah lebar kolom sesuai keperluan
+                                        }
+                                    },
+                                    orientation: (data === 'pdf') ? 'landscape' : undefined, // Pastikan PDF menggunakan landscape
+                                    pageSize: (data === 'pdf') ? 'A4' : undefined // Tentukan ukuran kertas untuk PDF
+                                }
+                            })
+                        ]
+
+            let table = $('#tableDailyLogs').DataTable({
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"Bf>>rtip', // Atur tata letak
+                buttons: buttons, // Masukkan tombol-tombol ekspor
+                processing: true,
+                serverSide: true,
+                searching: false,
+                autoWidth: true,
+                ajax: {
+                    url: '/api/projects/' + projectId + '/logs',
+                    type: 'GET',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    data: function (d) {
+                        // Ambil nilai dari dropdown untuk filter role
+                        // d.status = $('#statusFilter').val();
+                        d.fromDate = $('#fromDate').val();
+                        d.toDate = $('#toDate').val();
+
+                        return $.param({
+                            per_page: d.length,
+                            page: (d.start / d.length) + 1,
+                            status: d.status, // Tambahkan parameter filter role
+                            to_date: d.toDate,
+                            from_date: d.fromDate
+                        });
+                    },
+                    dataSrc: function (json) {
+                        let data = json.data.logs;
+
+                        if (!data) {
+                            return [];
+                        }
+
+                        return data.map(function (log) {
+
+                            let Createdate = new Date(log.created_at);
+                            let Updatedate = new Date(log.updated_at);
+                            let logDate = new Date(log.log_date);
+
+                            let description = log.description
+                            let issues = log.issues
+                            let file = log.file.String ? log.file.String : null
+
+                            let createDate = formatDate(Createdate);
+                            let updateDate = formatDate(Updatedate);
+                            logDate = formatDate(logDate, false)
+                            
+                            return {
+                                log_date: `<a href='#' class='log-date-link' data-id='${log.id}' 
+                                        data-logdate='${logDate}' 
+                                        data-income='${log.income}' 
+                                        data-expense='${log.expense}' 
+                                        data-description='${description}' 
+                                        data-issues='${issues}' 
+                                        data-created_at='${createDate}' 
+                                        data-updated_at='${updateDate}'
+                                        data-file='${file}'>
+                                        <b>${logDate}</b></a>`,
+                                income: formatBudget(log.income),
+                                expense: formatBudget(log.expense),
+                                description: '<pre>' + description + '</pre>',
+                                issues: '<pre>' + issues + '</pre>',
+                                action: userRole === 1 ? `<button type='button' class='btn btn-primary edit-btn' data-id='${log.id}'
+                                data-logdate='${log.log_date}' 
+                                data-income='${log.income}' 
+                                data-expense='${log.expense}' 
+                                data-description='${description}' 
+                                data-issues='${issues}'
+                                data-file='${file}'
+                                >Ubah</button> 
+                                    <button type='button' class='btn btn-danger delete-btn' data-id='${log.id}' 
+                                    data-logdate='${logDate}' data-bs-toggle='modal' data-bs-target='#deleteDailyLog'>Hapus</button>`
+                                    :
+                                    "-"
+                            };
+                        });
+                    }
+                },
+                error: function (xhr, error, code) {
+                    if (xhr.status === 404) {
+                        window.location.href = "/project"
+                    }
+                },
+                columns: [
+                    {
+                        data: 'log_date'
+                    },
+                    {
+                        data: 'income'
+                    },
+                    {
+                        data: 'expense'
+                    },
+                    {
+                        data: 'description'
+                    },
+                    {
+                        data: 'issues'
+                    },
+                    {
+                        data: 'action'
+                    }
+                ],
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    var json = api.ajax.json();
+                    $('.dataTables_info').html('Showing ' + (api.page.info().start + 1) + ' to ' +
+                        api
+                        .page.info().end + ' of ' + json.data.total + ' entries');
+
+                    // --------- DETAIL log_date
+                    $('.log-date-link').on('click', function (e) {
+                        e.preventDefault();
+
+                        let logDate = $(this).data('logdate');
+                        let income = "Rp." + formatBudget($(this).data('income'));
+                        let expense = "Rp." + formatBudget($(this).data('expense'));
+                        let description = $(this).data('description');
+                        let issues = $(this).data('issues');
+                        let createdAt = $(this).data('created_at');
+                        let updatedAt = $(this).data('updated_at');
+                        let file = $(this).data('file')
+                        // Masukkan data ke modal
+                        $('#logDetailModal .modal-logdate').text(logDate);
+                        $('#logDetailModal .modal-income').text(income);
+                        $('#logDetailModal .modal-expense').text(expense);
+                        $('#logDetailModal .modal-description').text(description);
+                        $('#logDetailModal .modal-issues').text(issues);
+                        $('#logDetailModal .modal-created-at').text(createdAt);
+                        $('#logDetailModal .modal-updated-at').text(updatedAt);
+                        
+                        // Logika untuk menampilkan file jika ada
+                        if (file) {
+                            let filename = file.split('/').pop() // Ambil nama file saja dari path
+                            $('#logDetailModal .modal-file').text(filename) // Tampilkan nama file
+                            let filePath = file.replace('./web', '/web'); // sesuaikan url
+                            $('#logDetailModal .modal-file').attr('href', filePath)
+                            $('#log-file-container').show()// Tampilkan elemen file
+                        } else {
+                            $('#log-file-container').hide() // Sembunyikan jika tidak ada file
+                        }
+
+                        // Tampilkan modal
+                        $('#logDetailModal').modal('show');
+                    });
+
+                    // -------------------------- EDIT BUTTON LOG DATE 
+                    $('.edit-btn').on('click', function (e) {
+                        e.preventDefault()
+
+                        let logId = $(this).data('id')
+                        let logDate = $(this).data('logdate')
+                        let income = $(this).data('income')
+                        let expense = $(this).data('expense')
+                        let description = $(this).data('description')
+                        let issues = $(this).data('issues')
+                        let file = $(this).data('file')
+
+                        // Masukkan data ke modal
+                        $('#editDailyLog #logId').val(logId)
+                        $('#editDailyLog #date').val(logDate.split("T")[0])
+                        $('#editDailyLog #income').val(income)
+                        $('#editDailyLog #expense').val(expense)
+                        $('#editDailyLog #description_log').val(description)
+                        $('#editDailyLog #issues').val(issues)
+
+                        // Logika untuk menampilkan file jika ada
+                        if (file) {
+                            let filename = file.split('/').pop(); // Ambil nama file saja dari path
+                            let filePath = file.replace('./web', '/web'); // Hilangkan './web' untuk akses URL yang benar
+                            
+                            $('#existingFile').text(filename); // Tampilkan nama file
+                            $('#existingFile').attr('href', filePath); // Set tautan ke file
+                            $('#existing-file-container').show(); // Tampilkan elemen file
+                        } else {
+                            $('#existing-file-container').hide(); // Sembunyikan elemen jika tidak ada file
+                        }
+
+                        // Tampilkan modal
+                        $('#editDailyLog').modal('show')
+                        
+                    });
+                }
+            });
+
+            $('#fromDate').on('change', function () {
+                table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+            });
+
+            $('#toDate').on('change', function () {
+                table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+            });
+
+
+            // ===================== CREATE DAILY LOG =======================================
+            $('#createDailyLog').on('submit', async function (event) {
+                event.preventDefault();
+
+                loading.style.display = 'flex'
+
+                const file = $('#file').prop('files')[0]
+
+                const formData = new FormData()
+                formData.append('project_id', projectId)
+                formData.append('log_date', $('#date').val())
+                formData.append('description', $('#description_log').val())
+                formData.append('issues', $('#issues').val())
+                formData.append('income', $('#income').val())
+                formData.append('expense', $('#expense').val())
+                formData.append('file', file ? file : "")
+
+                $('#createDailyLog').modal('hide');
+
+                try {
+                    const response = await fetch('/api/projects/' + projectId + "/logs", {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.error) {
+                        modalData.innerHTML = "<b class='text-dark'> Berhasil buat data daily log baru</b>";
+                        modal.show();
+
+                        $("#createDailyLog form")[0].reset();
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+
+                        table.draw();
+                    } else {
+                        modalData.innerHTML = "<b class='text-danger'> Input Daily Log Baru Gagal: " + data.message + "</b>";
+                        modal.show();
+                    }
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'> Terjadi Kesalahan: " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+
+
+
+
+
+            // ===================== DELETE DAILY LOG FILES =======================================
+            $('#deleteFileBtn').on('click', function () {
+                let logId = $('#editDailyLog #logId').val()
+                let logDate = $('#editDailyLog #date').val()
+
+                $('#deleteDailyLogFile').data('id', logId)
+                $('#deleteDailyLogFile .modal-body').html(
+                    "Apakah Anda yakin ingin menghapus File Daily Log Tanggal: <strong>" + logDate +
+                    "</strong>?")
+
+                $('#deleteDailyLogFile').modal('show')
+            })
+
+
+            $('#confirmDeleteLogsFile').on("click", async function () {
+                event.preventDefault()
+
+                loading.style.display = 'flex'
+                let logId = $('#editDailyLog #logId').val()
+
+                $('#deleteDailyLogFile').modal('hide')
+                $('#editDailyLog').modal('hide')
+
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/logs/${logId}/files`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.error) {
+                        modalData.innerHTML = "<b class='text-dark'>Berhasil hapus file Daily Log</b>";
+                        modal.show();
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        modalData.innerHTML = "<b class='text-danger'>" + data.message + "</b>";
+                        modal.show();
+                    }
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'>Error : " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            })
+
+
+
+
+
+            // ===================== EDIT DAILY LOGS =======================================
+            $('#editDailyLog').on('submit', async function (event) {
+                event.preventDefault();
+
+                loading.style.display = 'flex'
+                let logId = $('#editDailyLog #logId').val()
+                let file = $('#editDailyLog #file').prop('files')[0]
+
+                formData = new FormData()
+                formData.append('log_date', $('#editDailyLog #date').val())
+                formData.append('description', $('#editDailyLog #description_log').val())
+                formData.append('issues', $('#editDailyLog #issues').val())
+                formData.append('income', $('#editDailyLog #income').val())
+                formData.append('expense', $('#editDailyLog #expense').val())
+                formData.append('file', file ? file : "")
+
+                if(!date) {
+                    loading.style.display = 'none'
+                    modalData.innerHTML = "<b class='text-danger'>Tanggal tidak boleh kosong</b>";
+                    modal.show()
+                    return
+                }
+
+                $('#editDailyLog').modal('hide');
+
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/logs/${logId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.error) {
+                        modalData.innerHTML = "<b class='text-dark'> Berhasil Edit Data Daily Log </b>";
+                        modal.show();
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        modalData.innerHTML = "<b class='text-danger'> Gagal Edit Data Daily Log: " + data.message + "</b>";
+                        modal.show();
+                        $("#createUserModal").modal('show');
+                    }
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'> Terjadi Kesalahan: " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+
+
+
+
+
+            // ===================== DELETE DAILY LOG =======================================
+            $('#tableDailyLogs').on('click', '.delete-btn', function () {
+                let logId = $(this).data('id'); // Ambil ID dari tombol
+                let logDate = $(this).data('logdate'); // Ambil ID dari tombol
+
+                // Masukkan ID ke dalam modal, misalnya ke elemen dengan id "deleteUserId"
+                $('#deleteDailyLog').data('id', logId); // Simpan ID ke modal
+                $('#deleteDailyLog .modal-body').html(
+                    "Apakah Anda yakin ingin menghapus Daily Log Tanggal: <strong>" + logDate +
+                    "</strong>?"); // Tampilkan pesan
+            });
+
+            $('#deleteDailyLog .btn-danger').on('click',async function () {
+                let logId = $('#deleteDailyLog').data('id'); // Ambil ID dari modal
+
+                loading.style.display = 'flex'
+                modalDelete.hide() // Tutup modal konfirmasi
+
+                // Kirimkan request delete dengan fetch
+                try {
+                    const response = await fetch(`/api/projects/${projectId}/logs/${logId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.error) {
+                        modalData.innerHTML = "<b class='text-dark'> Berhasil Hapus data Daily Log </b>";
+                        modal.show();
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        modalData.innerHTML = "<b class='text-danger'>" + data.message + "</b>";
+                        modal.show();
+                    }
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'>Error : " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+
+        });
+    </script>
+
+    {{ template "components/_footer-two" . }}

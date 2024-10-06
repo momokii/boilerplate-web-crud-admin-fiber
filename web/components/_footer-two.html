@@ -1,0 +1,32 @@
+
+<script>
+    let tokenlogout = getCookie("token")
+    const logout = async () => {
+        try {
+            const response = await fetch("/api/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${tokenlogout}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (!data.error) {
+                window.location.href = "/login";
+            }
+        } catch (error) {
+            console.error('Error during logout:', error);
+            // You can add additional error handling logic here, such as displaying a message to the user
+        }
+    };
+
+    $("#LogoutButton").on('click', function() {
+        logout()
+    })
+</script>
+
+</body>
+
+</html>

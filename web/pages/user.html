@@ -1,0 +1,503 @@
+{{template "components/_header" .}}
+{{template "components/_sidebar" .}}
+<div class="wrapper d-flex flex-column min-vh-100">
+    {{template "components/_navbar" .}}
+    <div class="body flex-grow-1">
+        <div class="container-lg px-4">
+
+            <div class="row">
+                <div class="col-lg-12 tab-content">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">User Table</h4>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#createUserModal" data-bs-whatever="@mdo">Tambah User</button>
+                                </div>
+                            </div>
+
+                            <!-- CREATE USER MODAL -->
+                            <div class="modal fade" id="createUserModal" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">User Baru</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="createUserForm">
+                                                <div class="mb-3">
+                                                    <label for="username" class="col-form-label">Username</label>
+                                                    <input type="text" class="form-control" id="username"
+                                                        name="username" minlength="5">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="password" class="col-form-label">Password:</label>
+                                                    <input type="password" class="form-control" id="password"
+                                                        name="password" minlength="6"></input>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="password_confirm" class="col-form-label">Password
+                                                        Konfirmasi:</label>
+                                                    <input type="password" class="form-control" id="password_confirm"
+                                                        name="password_confirm" minlength="6"></input>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="role" class="col-form-label">Role:</label>
+                                                    <select id="role" name="role"
+                                                        class="form-select form-control text-dark">
+                                                        <option value="1">Admin</option>
+                                                        <option value="2">User</option>
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Buat Akun</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EDIT USER MODAL -->
+                            <div class="modal fade" id="editUser" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">User Edit</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="editUserForm">
+                                                <input type="hidden" id="userId" name="userId">
+                                                <div class="mb-3">
+                                                    <label for="username" class="col-form-label">Username Baru: </label>
+                                                    <input type="text" class="form-control" id="username"
+                                                        name="username" minlength="5">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="role" class="col-form-label">Role Baru:</label>
+                                                    <select id="role" name="role"
+                                                        class="form-select form-control text-dark">
+                                                        <option value="1">Admin</option>
+                                                        <option value="2">User</option>
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Edit Akun</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- TABEL FILTERING UTAMA -------------------------------------------- -->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <label for="roleFilter" class="form-label fw-bold">Role</label>
+                                    <select id="roleFilter" class="form-select">
+                                        <option value="">All Roles</option>
+                                        <option value="1">Admin</option>
+                                        <option value="2">User</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label for="fromDate" class="form-label fw-bold">From</label>
+                                    <input type="date" id="fromDate" class="form-control" placeholder="From Date">
+                                </div>
+                                <div class="col-lg-4">
+                                    <label for="toDate" class="form-label fw-bold">To</label>
+                                    <input type="date" id="toDate" class="form-control" placeholder="To Date">
+                                </div>
+                            </div>
+                            <!-- TABEL UTAMA -------------------------------------------- -->
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="tableUser">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Role</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{ template "components/_modal-infor" .}}
+            <!-- DELETE USER MODAL -->
+            <div class="modal fade" id="deleteUser" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus User</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger">Konfirmasi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {{ template "components/_loading" . }}
+    {{ template "components/_modal-infor" . }}
+    {{ template "components/_footer-one" . }}
+
+    <script>
+        const token = getCookie("token")
+        const modal = new bootstrap.Modal(document.getElementById('infoModal'))
+        const modalData = document.getElementById("modalMessage") // data showed from modal abov
+        const modalDelete = new bootstrap.Modal(document.getElementById('deleteUser'))
+        const loading = document.getElementById('loadingModal')
+        loading.style.display = 'none'
+
+        $(document).ready(async function () {
+            let table = $('#tableUser').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/users',
+                    type: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    data: function (d) {
+                        // Ambil nilai dari dropdown untuk filter role
+                        d.role = $('#roleFilter').val();
+                        d.fromDate = $('#fromDate').val();
+                        d.toDate = $('#toDate').val();
+
+                        return $.param({
+                            per_page: d.length,
+                            page: (d.start / d.length) + 1,
+                            search: d.search.value,
+                            role: d.role, // Tambahkan parameter filter role
+                            to_date: d.toDate,
+                            from_date: d.fromDate
+                        });
+                    },
+                    dataSrc: function (json) {
+                        let data = json.data.users;
+
+                        if (!data) {
+                            return [];
+                        }
+
+                        return data.map(function (user) {
+
+                            let Createdate = new Date(user.created_at);
+                            let Updatedate = new Date(user.updated_at);
+
+                            function formatDate(date) {
+                                return date.toLocaleString('en-GB', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                    hour12: false
+                                });
+                            }
+                            let createDate = formatDate(Createdate);
+                            let updateDate = formatDate(Updatedate);
+
+                            return {
+                                username: user.username,
+                                role: user.role === 1 ? "admin" : "user",
+                                created_at: createDate,
+                                updated_at: updateDate,
+                                action: "<button type='button' class='btn btn-primary edit-btn' data-id='" +
+                                    user.id + "' >Ubah</button> " +
+                                    "<button type='button' class='btn btn-danger delete-btn' data-id='" +
+                                    user.id + "' data-username='" + user.username +
+                                    "' data-bs-toggle='modal' data-bs-target='#deleteUser'>Hapus</button>"
+                            };
+                        });
+                    }
+                },
+                columns: [{
+                        data: 'username'
+                    },
+                    {
+                        data: 'role'
+                    },
+                    {
+                        data: 'created_at'
+                    },
+                    {
+                        data: 'updated_at'
+                    },
+                    {
+                        data: 'action'
+                    }
+                ],
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    var json = api.ajax.json();
+                    $('.dataTables_info').html('Showing ' + (api.page.info().start + 1) + ' to ' +
+                        api
+                        .page.info().end + ' of ' + json.data.total + ' entries');
+                }
+            });
+
+            $('#roleFilter').on('change', function () {
+                table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+            });
+
+            $('#fromDate').on('change', function () {
+                table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+            });
+
+            $('#toDate').on('change', function () {
+                table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+            });
+
+
+
+
+            
+            // ===================== CREATE USER =======================================
+            $('#createUserForm').on('submit', async function (event) {
+                event.preventDefault();
+
+                loading.style.display = 'flex'
+
+                const password = document.getElementById('password').value
+                const password_confirm = document.getElementById('password_confirm').value
+                const username = document.getElementById('username').value
+
+                if (username.length < 5) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Username minimal 5 karakter dan berupa alpanumerik</b>";
+                    modal.show()
+                    return
+                }
+
+                if (password.length < 6) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Password minimal 6 karakter</b>";
+                    modal.show()
+                    return
+                }
+
+                if (password !== password_confirm) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Password dan Password Konfirmasi tidak sama</b>";
+                    modal.show()
+                    return
+                }
+
+                $('#createUserModal').modal('hide');
+
+                try {
+                    const response = await fetch('/api/users', {
+                        method: 'POST',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password,
+                            role: parseInt($('#createUserForm #role').val())
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.error) {
+                        modalData.innerHTML = "<b class='text-dark'> Berhasil buat data user baru </b>";
+                        modal.show();
+
+                        $("#createUserModal form")[0].reset();
+
+                        table.draw();
+                    } else {
+                        modalData.innerHTML = "<b class='text-danger'> Input User Baru Gagal: " + data.message + "</b>";
+                        modal.show();
+                    }
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'> Terjadi Kesalahan: " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+
+
+
+
+
+            // ===================== EDIT USER =======================================
+            // ------------- GET DATA USERS
+            $('#tableUser').on('click', '.btn-primary', async function () {
+                let userId = $(this).data('id')
+
+                loading.style.display = 'flex'
+                modalDelete.hide()
+
+                try {
+                    const response = await fetch('/api/users/' + userId, {
+                        method: 'GET',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    const data = await response.json();
+
+                    loading.style.display = 'none';
+
+                    if (data.error) {
+                        throw new Error(data.message || 'Gagal memuat data user');
+                    }
+
+                    $('#editUser #userId').val(data.data.id);
+                    $('#editUser #username').val(data.data.username);
+                    $('#editUser #role').val((data.data.role).toString());
+
+                    const modalEditUser = new bootstrap.Modal(document.getElementById('editUser'));
+                    modalEditUser.show();
+                    
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'>" + error.message + "</b>";
+                    modal.show();
+                }
+            });
+
+            // -------- EDIT USERS
+            $('#editUserForm').on('submit', async function (event) {
+                event.preventDefault();
+
+                loading.style.display = 'flex'
+
+                let userId = $('#editUserForm #userId').val();
+                const username = $('#editUser #username').val()
+
+                if (username.length < 5) {
+                    loading.style.display = 'none'
+
+                    modalData.innerHTML = "<b>Username minimal 5 karakter dan berupa alpanumerik</b>";
+                    modal.show()
+                    return
+                }
+
+                var formData = new FormData(this);
+
+                $('#editUser').modal('hide');
+
+                try {
+                    const response = await fetch('/api/users/' + userId, {
+                        method: 'PATCH',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            role: parseInt($('#editUserForm #role').val())
+                        })
+                    });
+
+                    const data = await response.json();
+                    console.log(data)
+
+                    if (data.error) {
+                        console.log("masuk sono2")
+                        throw new Error(data.message || 'Gagal Edit Data User');
+                    }
+
+                    modalData.innerHTML = "<b class='text-dark'> Berhasil Edit Data User </b>";
+                    modal.show();
+
+                    table.draw();
+
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'> Terjadi Kesalahan: " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+
+
+
+
+
+            // ===================== DELETE USER =======================================
+            $('#tableUser').on('click', '.delete-btn', async function () {
+                let userId = $(this).data('id'); // Ambil ID dari tombol
+                let username = $(this).data('username'); // Ambil ID dari tombol
+
+                $('#deleteUser').data('id', userId);
+                $('#deleteUser .modal-body').html(
+                    "Apakah Anda yakin ingin menghapus user dengan Username: <strong>" + username +
+                    "</strong>?");
+            });
+
+            $('#deleteUser .btn-danger').on('click', async function () {
+                let userId = $('#deleteUser').data('id'); // Ambil ID dari modal
+
+                loading.style.display = 'flex'
+                modalDelete.hide() // Tutup modal konfirmasi
+
+                try {
+                    const response = await fetch('/api/users/' + userId, {
+                        method: 'DELETE',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        throw new Error(data.message || 'Gagal menghapus data user');
+                    }
+
+                    modalData.innerHTML = "<b class='text-dark'> Berhasil Hapus data User </b>";
+                    modal.show();
+
+                    table.draw();
+
+                } catch (error) {
+                    modalData.innerHTML = "<b class='text-danger'>Error : " + error.message + "</b>";
+                    modal.show();
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+
+        });
+    </script>
+    {{ template "components/_footer-two" . }}

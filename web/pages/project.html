@@ -1,0 +1,510 @@
+{{template "components/_header" .}}
+{{template "components/_sidebar" .}}
+<div class="wrapper d-flex flex-column min-vh-100">
+    {{template "components/_navbar" .}}
+    <div class="body flex-grow-1">
+        <div class="container-lg px-4">
+
+            <div class="row">
+                <div class="col-lg-12 tab-content">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Statistik Proyek -->
+                            <div class="row my-4">
+                                <div class="col-lg-12 mb-4">
+                                    <h3 class="text-center">Statistik Proyek</h3>
+                                </div>
+
+                                <div class="col-lg-4 mb-3">
+                                    <div class="card shadow-sm border-primary">
+                                        <div class="card-body text-center">
+                                            <h6><strong>Anggaran Rata-rata Per Proyek:</strong></h6>
+                                            <p id="avg_budget_projects" class="text-primary">Rp 0</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 mb-3">
+                                    <div class="card shadow-sm border-success">
+                                        <div class="card-body text-center">
+                                            <h6><strong>Proyek dengan Anggaran Tertinggi:</strong></h6>
+                                            <p id="highest_budget_project" class="text-success">-</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 mb-3">
+                                    <div class="card shadow-sm border-primary">
+                                        <div class="card-body text-center">
+                                            <h6><strong>Total Anggaran Semua Proyek:</strong></h6>
+                                            <p id="total_budget_all_projects" class="text-primary">Rp 0</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 mb-3">
+                                    <div class="card shadow-sm border-dark">
+                                        <div class="card-body text-center">
+                                            <h6><strong>Total Proyek:</strong></h6>
+                                            <p id="total_project" class="text-dark">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 mb-3">
+                                    <div class="card shadow-sm border-primary">
+                                        <div class="card-body text-center">
+                                            <h6><strong>Proyek Selesai:</strong></h6>
+                                            <p id="total_project_done" class="text-dark">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 mb-3">
+                                    <div class="card shadow-sm border-danger">
+                                        <div class="card-body text-center">
+                                            <h6><strong>Proyek Sedang Berjalan:</strong></h6>
+                                            <p id="total_project_ongoing" class="text-danger">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Chart 1 -->
+                                <div class="col-lg-4 mb-4 mx-auto">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="text-center"><strong>Project By Status Data</strong></h6>
+                                            <canvas id="chart1"></canvas> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h4 class="card-title">Project Table</h4>
+
+                            {{ if eq .User.Role 1 }}
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#createProjectModal">Tambah
+                                        Project</button>
+                                </div>
+                            </div>
+
+                            <!-- CREATE Project MODAL -->
+                            <div class="modal fade" id="createProjectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Project Baru</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="createProjectForm">
+                                                <div class="mb-3">
+                                                    <label for="name" class="col-form-label">Nama Project</label>
+                                                    <input type="text" class="form-control" id="name" name="name" minlength="5">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="description" class="col-form-label">Deskripsi:</label>
+                                                    <textarea class="form-control" name="description" id="description" minlength="5" rows="4"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="start_date" class="col-form-label">Start Date:</label>
+                                                    <input type="date" class="form-control" id="start_date" name="start_date">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="status" class="col-form-label">Status:</label>
+                                                    <select id="status" name="status" class="form-select form-control text-dark">
+                                                        <option value="1">Not Started</option>
+                                                        <option value="2">On-Going</option>
+                                                        <option value="3">Done</option>
+                                                        <option value="4">Pending</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="budget" class="col-form-label">Budget:</label>
+                                                    <input type="number" class="form-control" id="budget" name="budget" required min="0" value="0">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Buat Project</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{ end }}
+
+
+                            <!-- TABEL FILTERING UTAMA -------------------------------------------- -->
+                            <div class="row mb-3">
+                                <div class="col-lg-3">
+                                    <label for="statusFilter" class="form-label">Status</label>
+                                    <select id="statusFilter" class="form-select">
+                                        <option value="">All Status</option>
+                                        <option value="1">No-Started</option>
+                                        <option value="2">On-Going</option>
+                                        <option value="3">Done</option>
+                                        <option value="4">Pending</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="fromDate" class="form-label">From Date</label>
+                                    <input type="date" id="fromDate" class="form-control" placeholder="From Date">
+                                    <small class="text-muted">Filter Kolom: <strong>Start Date</strong> column</small>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="toDate" class="form-label">To Date</label>
+                                    <input type="date" id="toDate" class="form-control" placeholder="To Date">
+                                    <small class="text-muted">Filter Kolom: <strong>Start Date</strong> column</small>
+                                </div>
+                            </div>
+                            
+
+                            <!-- TABEL UTAMA -------------------------------------------- -->
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="tableProject">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Project</th>
+                                            <th>Status</th>
+                                            <!-- <th>Budget</th> -->
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{ template "components/_modal-infor" .}}
+            <!-- DELETE Project MODAL -->
+            <div class="modal fade" id="deleteProject" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Hapus Project</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger">Konfirmasi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {{ template "components/_loading" . }}
+    {{ template "components/_modal-infor" .}}
+    {{ template "components/_footer-one" . }}
+
+
+    <div id="user-data" data-role="{{.User.Role}}"></div>
+<script>
+    const userRole = parseInt($('#user-data').data('role'))
+    const token = getCookie("token")
+    const modal = new bootstrap.Modal(document.getElementById('infoModal'))
+    const modalData = document.getElementById("modalMessage")
+    const modalDelete = new bootstrap.Modal(document.getElementById('deleteProject'))
+    const loading = document.getElementById('loadingModal')
+    
+    loading.style.display = 'flex'
+
+    $(document).ready( async function () {
+        let table = $('#tableProject').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/api/projects',
+                type: 'GET',
+                headers: {
+                    Authorization: "Bearer " + token,
+                    "Content-Type": "application/json"
+                },
+                data: function (d) {
+                    // Ambil nilai dari dropdown untuk filter role
+                    d.status = $('#statusFilter').val();
+                    d.fromDate = $('#fromDate').val();
+                    d.toDate = $('#toDate').val();
+
+                    return $.param({
+                        per_page: d.length,
+                        page: (d.start / d.length) + 1,
+                        search: d.search.value,
+                        status: d.status, // Tambahkan parameter filter role
+                        to_date: d.toDate,
+                        from_date: d.fromDate
+                    });
+                },
+                dataSrc: function (json) {
+                    let data = json.data.projects;
+
+                    if (!data) {
+                        return [];
+                    }
+
+                    return data.map(function (project) {
+
+                        let Createdate = new Date(project.created_at);
+                        let Updatedate = new Date(project.updated_at);
+
+                        let createDate = formatDate(Createdate);
+                        let updateDate = formatDate(Updatedate);
+                        
+                        let startDate = project.start_date.String === "" ? "-" : formatDate(new Date(project.start_date.String), false)
+                        let endDate = project.end_date.String === "" ? "-" : formatDate(new Date(project.end_date.String), false)
+
+                        const status = project.status === 1 ? "Not Started" : project.status === 2 ? "On-Going" : project.status === 3 ? "Done" : "Pending"
+
+                        return {
+                            name: "<a class='link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover' href='project/"+ project.id +"'>"+project.name+"</a>",
+                            status: status,
+                            // budget: formatBudget(project.budget),
+                            start_date: startDate,
+                            end_date: endDate,
+                            created_at: createDate,
+                            updated_at: updateDate,
+                            action: userRole === 1 ? "<button type='button' class='btn btn-danger delete-btn' data-id='" + project.id + "' data-name='" + project.name + "' data-bs-toggle='modal' data-bs-target='#deleteProject'>Hapus</button>" : "-"
+                        };
+                    });
+                }
+            },
+            columns: [
+                {
+                    data: 'name'
+                },
+                {
+                    data: 'status'
+                },
+                // {
+                //     data: 'budget'
+                // },
+                {
+                    data: 'start_date'
+                },
+                {
+                    data: 'end_date'
+                },
+                {
+                    data: 'created_at'
+                },
+                {
+                    data: 'updated_at'
+                },
+                {
+                    data: 'action'
+                }
+            ],
+            drawCallback: function (settings) {
+                var api = this.api();
+                var json = api.ajax.json();
+                $('.dataTables_info').html('Showing ' + (api.page.info().start + 1) + ' to ' +
+                    api
+                    .page.info().end + ' of ' + json.data.total + ' entries');
+            }
+        });
+
+        $('#statusFilter').on('change', function () {
+            table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+        });
+
+        $('#fromDate').on('change', function () {
+            table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+        });
+
+        $('#toDate').on('change', function () {
+            table.draw(); // Redraw table untuk memuat ulang data dengan filter baru
+        });
+
+
+        // ===================== FETCH PROJECT STATS =======================================
+        try {
+            const response = await fetch("/api/projects/stats", {
+                method: 'GET',
+                headers: {
+                    Authorization: "Bearer " + token,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const data = await response.json();
+            const status = response.status;
+
+            if (status !== 200) {
+                throw new Error(data.message || 'Error fetching project stats');
+            }
+
+            const projectStats = data.data.projectStats;
+            const projectStatusStats = [];
+            const projectStatusStatsLabel = [];
+
+            if (data.data.projectStatusStats){
+                data.data.projectStatusStats.forEach(item => {
+                    projectStatusStats.push(item.total);
+                    projectStatusStatsLabel.push(item.status);
+                })
+            }
+
+            $("#avg_budget_projects").text("Rp " + formatBudget(projectStats.avg_budget_projects));
+            $("#highest_budget_project").text(projectStats.highest_budget_project.String);
+            $("#total_budget_all_projects").text("Rp " + formatBudget(projectStats.total_budget_all_projects));
+            $("#total_project").text(projectStats.total_project);
+            $("#total_project_done").text(projectStats.total_project_done);
+            $("#total_project_ongoing").text(projectStats.total_project_ongoing);
+
+            const chart1 = document.getElementById("chart1").getContext('2d');
+            new Chart(chart1, {
+                type: "pie",
+                data: {
+                    labels: projectStatusStatsLabel,
+                    datasets: [{
+                        label: "Status",
+                        data: projectStatusStats
+                    }]
+                }
+            });
+
+        } catch (error) {
+            modalData.innerHTML = "<b class='text-danger'>Error: " + error.message + "</b>";
+            modal.show();
+        } finally {
+            loading.style.display = 'none';
+        }
+        
+
+
+
+
+        // ===================== CREATE PROJECT =======================================
+        $('#createProjectForm').on('submit', async function (event) {
+            event.preventDefault();
+
+            loading.style.display = 'flex'
+
+            const name = document.getElementById('name').value
+            const deskripsi = document.getElementById('description').value
+            const status = parseInt(document.getElementById('status').value)
+            const startDate = document.getElementById('start_date').value
+            const budget = parseInt(document.getElementById('budget').value)
+
+            $('#createProjectModal').modal('hide');
+
+            try {
+                const response = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: "Bearer " + token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        description: deskripsi,
+                        status: status,
+                        budget: budget,
+                        start_date: startDate
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (!data.error) {
+                    modalData.innerHTML =
+                        "<b class='text-dark'> Berhasil buat data project baru </b>";
+                    modal.show();
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+
+                    table.draw();
+                } else {
+                    modalData.innerHTML =
+                        "<b class='text-danger'> Input Project Baru Gagal: " + data.message + "</b>";
+                    modal.show();
+
+                    $("#createUserModal").modal('show');
+                }
+            } catch (error) {
+                modalData.innerHTML = "<b class='text-danger'> Terjadi Kesalahan: " + error.message + "</b>";
+                modal.show();
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+
+
+
+
+        // // ===================== DELETE PROJECT =======================================
+        $('#tableProject').on('click', '.delete-btn', function () {
+            let projectId = $(this).data('id'); // Ambil ID dari tombol
+            let name = $(this).data('name'); // Ambil ID dari tombol
+
+            // Masukkan ID ke dalam modal, misalnya ke elemen dengan id "deleteUserId"
+            $('#deleteProject').data('id', projectId); // Simpan ID ke modal
+            $('#deleteProject .modal-body').html(
+                "Apakah Anda yakin ingin menghapus project dengan nama: <strong>" + name +
+                "</strong>? semua catatan didalamnya akan terhapus juga"); // Tampilkan pesan
+        });
+
+        $('#deleteProject .btn-danger').on('click', async function () {
+            let projectId = $('#deleteProject').data('id'); // Ambil ID dari modal
+
+            loading.style.display = 'flex'
+            modalDelete.hide() // Tutup modal konfirmasi
+
+            // Kirimkan request delete dengan fetch
+            try {
+                const response = await fetch('/api/projects/' + projectId, {
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: "Bearer " + token,
+                        "Content-Type": "application/json"
+                    },
+                });
+
+                const data = await response.json();
+
+                if (!data.error) {
+                    modalData.innerHTML =
+                        "<b class='text-dark'> Berhasil Hapus data Project </b>";
+                    modal.show();
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+
+                    table.draw();
+                } else {
+                    modalData.innerHTML = "<b class='text-danger'>" + data.message + "</b>";
+                    modal.show();
+                }
+            } catch (error) {
+                modalData.innerHTML = "<b class='text-danger'>Error: " + error.message + "</b>";
+                modal.show();
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+
+    }); 
+</script> 
+
+{{ template "components/_footer-two" . }}

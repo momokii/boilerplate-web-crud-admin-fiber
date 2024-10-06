@@ -1,0 +1,251 @@
+{{template "components/_header" .}}
+{{template "components/_sidebar" .}}
+
+<div class="wrapper d-flex flex-column min-vh-100">
+    {{template "components/_navbar" .}}
+
+    <div class="body flex-grow-1">
+        <div class="container-lg px-4">
+            <!-- Statistik  -->
+            <div class="row my-4">
+                <div class="col-lg-12 mb-4">
+                    <h3 class="text-center">Dashboard Data</h3>
+                </div>
+
+                <hr>
+
+                <div class="col-lg-12 mb-4">
+                    <h5 class="text-center">Proyek</h5>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="card shadow-sm border-primary">
+                        <div class="card-body text-center">
+                            <h6><strong>Anggaran Rata-rata Per Proyek:</strong></h6>
+                            <p id="avg_budget_projects" class="text-primary">Rp 0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="card shadow-sm border-success">
+                        <div class="card-body text-center">
+                            <h6><strong>Proyek dengan Anggaran Tertinggi:</strong></h6>
+                            <p id="highest_budget_project" class="text-success">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="card shadow-sm border-primary">
+                        <div class="card-body text-center">
+                            <h6><strong>Total Anggaran Semua Proyek:</strong></h6>
+                            <p id="total_budget_all_projects" class="text-primary">Rp 0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="card shadow-sm border-dark">
+                        <div class="card-body text-center">
+                            <h6><strong>Total Proyek:</strong></h6>
+                            <p id="total_project" class="text-dark">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 1 -->
+                <div class="col-lg-4 mb-4 mx-auto">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-center"><strong>Project By Status Data</strong></h6>
+                            <canvas id="chart1"></canvas> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <!-- Button to Open Modal for Newest Projects -->
+            <div class="row my-4">
+                <div class="col-lg-6 mb-4 text-center">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newestProjectsModal">
+                        View Newest Projects
+                    </button>
+                </div>
+
+                <!-- Button to Open Modal for Newest Logs -->
+                <div class="col-lg-6 mb-4 text-center">
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#newestLogsModal">
+                        View Newest Logs
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal for Newest Projects -->
+            <div class="modal fade" id="newestProjectsModal" tabindex="-1" aria-labelledby="newestProjectsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="newestProjectsModalLabel">Newest Projects</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Projects will be inserted here dynamically -->
+                            <div class="list-group" id="newest-projects-list">
+                                <!-- jQuery will fill this section -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Newest Logs -->
+            <div class="modal fade" id="newestLogsModal" tabindex="-1" aria-labelledby="newestLogsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="newestLogsModalLabel">Newest Logs</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Logs will be inserted here dynamically -->
+                            <div class="list-group" id="newest-logs-list">
+                                <!-- jQuery will fill this section -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+
+        </div>
+    </div>
+
+    {{ template "components/_loading" . }}
+    {{ template "components/_modal-infor" .}}
+
+    {{ template "components/_footer-one" . }}
+    <script>
+        const token = getCookie("token")
+        const modal = new bootstrap.Modal(document.getElementById('infoModal'))
+        const modalData = document.getElementById("modalMessage")
+        const loading = document.getElementById('loadingModal')
+
+        loading.style.display = "flex"
+
+        $(document).ready(async function () {
+            try {
+                const response = await fetch("/api/dashboard", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                })
+
+                const data = await response.json()
+                const status = response.status
+
+                if (!data.error) {
+
+                    const newest_projects = data.data.newest_created_projects
+                    const newest_logs = data.data.newest_daily_logs
+                    const project_data = data.data.project_data
+                    const project_status_data = data.data.project_status_data
+
+                    // ---------------- project data
+                    const projectStatusStats = [];
+                    const projectStatusStatsLabel = [];
+                    if (project_status_data){
+                        project_status_data.forEach(item => {
+                            projectStatusStats.push(item.total);
+                            projectStatusStatsLabel.push(item.status);
+                        })
+                    }
+
+                    $("#avg_budget_projects").text("Rp " + formatBudget(project_data.avg_budget_projects));
+                    $("#highest_budget_project").text(project_data.highest_budget_project.String);
+                    $("#total_budget_all_projects").text("Rp " + formatBudget(project_data.total_budget_all_projects));
+                    $("#total_project").text(project_data.total_project);
+
+                    const chart1 = document.getElementById("chart1").getContext('2d');
+                    new Chart(chart1, {
+                        type: "pie",
+                        data: {
+                            labels: projectStatusStatsLabel,
+                            datasets: [{
+                                label: "Status",
+                                data: projectStatusStats
+                            }]
+                        }
+                    });
+
+
+                    // ---------------- looping newest projects and logs
+                    const projectList = $('#newest-projects-list')
+                    const logList = $('#newest-logs-list')
+                    projectList.empty()
+                    logList.empty()
+
+                    // newest project
+                    if (newest_projects) {
+                        newest_projects.forEach(project => {
+                            let status = project.status === 1 ? "Not Started" : project.status === 2 ? "On-Going" : project.status === 3 ? "Done" : "Pending"
+                            projectList.append(`
+                                <a href="/project/${project.id}" class="list-group-item list-group-item-action border rounded shadow-sm mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <!-- Project name -->
+                                        <h5 class="mb-1 text-primary">${project.name}</h5>
+                                        <!-- Created at timestamp -->
+                                        <small class="text-muted">Created at: ${formatDate(new Date(project.created_at))}</small>
+                                    </div>
+                                    <pre class="mb-2 text-dark">${project.description}</pre>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <!-- Project budget -->
+                                        <span class="badge bg-success">Rp. ${formatBudget(project.budget)}</span>
+                                        <!-- Project status -->
+                                        <small>Status: ${status}</small>
+                                    </div>
+                                </a>
+                            `)
+                        })
+                    }
+
+                    // newest logs
+                    if (newest_logs) {
+                        newest_logs.forEach(log => {
+                            logList.append(`
+                            <a href="/project/${log.project_id}" class="list-group-item list-group-item-action border rounded shadow-sm mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="mb-1 text-primary">${log.project_name}</h5>
+                                    <small class="text-muted fw-bold">Log Date: ${formatDate(new Date(log.log_date), false)}</small>
+                                </div>
+                                <pre class="mb-2 text-dark">Description :<br>${log.description}</pre>
+                                ${log.issues ? `<pre class="text-danger mb-2"><strong>Issues:<br></strong>${log.issues}</pre>` : ''}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">Income: Rp. ${formatBudget(log.income)}</span>
+                                    <span class="badge bg-danger">Expense: Rp. ${formatBudget(log.expense)}</span>
+                                </div>
+                            </a>
+
+                            `)
+                        })
+                    }
+
+
+                } else {
+                    modalData.innerHTML = "<b class='text-danger'>" + data.message + "</b>";
+                    modal.show();
+                }
+
+            } catch(e) {
+                modalData.innerHTML = "<b class='text-danger'>Terjadi kesalahan: " + e.message + " .</b>";
+                modal.show();
+            } finally {
+                loading.style.display = "none"
+            }
+        })
+    </script>
+    {{ template "components/_footer-two" . }}
