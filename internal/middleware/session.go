@@ -87,9 +87,9 @@ func ValidateAndGetUserData(c *fiber.Ctx, token string) (models.UserSession, err
 	if err != nil {
 		return userSess, err
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer utils.CommitOrRollback(tx, c, err)
 
-	userRepo := repository.NewUserRepository(database.DB)
+	userRepo := repository.NewUserRepository()
 	userData, err := userRepo.FindByID(tx, int(userId))
 	if err != nil {
 		return userSess, err

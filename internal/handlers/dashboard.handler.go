@@ -45,7 +45,9 @@ func (h *DashboardHandler) DashboardData(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	project_data, err := h.projectRepo.FindProjectsStats(tx, user.Id)
 	if err != nil {
@@ -57,11 +59,13 @@ func (h *DashboardHandler) DashboardData(c *fiber.Ctx) error {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
 
+	// get 5 newest created projects vase on created date
 	newest_created_projects, _, err := h.projectRepo.FindWithPagination(tx, 5, 1, "", "", "", "", user.Id)
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
 
+	// get 10 newest daily logs base on log date not on created date
 	newest_daily_logs, _, err := h.dailyLogRepo.FindWithPagination(tx, 10, 1, "", 0, "", "", user.Id, user.Role)
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())

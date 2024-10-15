@@ -59,7 +59,9 @@ func (h *ProjectHandler) GetProjectsData(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// if superadmin can get all project from all user
 	if user.Role == 3 {
@@ -86,7 +88,9 @@ func (h *ProjectHandler) GetProjectByID(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	checkProjectOwner, err := h.projectRepo.FindByID(tx, id)
 	if err != nil {
@@ -118,7 +122,9 @@ func (h *ProjectHandler) GetProjectsStats(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// project stats by status
 	projectStatusStats, err := h.projectRepo.FindProjectStatusStats(tx, user.Id)
@@ -163,7 +169,9 @@ func (h *ProjectHandler) CreateProject(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// input id admin created
 	projectInput.CreatedBy = userData.Id
@@ -205,7 +213,9 @@ func (h *ProjectHandler) EditProject(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	checkProjectOwner, err := h.projectRepo.FindIfProjectOwner(tx, projectId, user.Id)
 	if err != nil {
@@ -238,7 +248,9 @@ func (h *ProjectHandler) DeleteProject(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	_, err = h.projectRepo.FindIfProjectOwner(tx, id, user.Id)
 	if err != nil {

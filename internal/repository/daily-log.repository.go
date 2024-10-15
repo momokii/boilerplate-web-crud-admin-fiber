@@ -18,12 +18,10 @@ type DailyLogRepository interface {
 	FindStatsCumulative(tx *sql.Tx, projectId int) ([]models.DailyLogStatsCumulative, error)
 }
 
-type dailyLogRepository struct {
-	db *sql.DB
-}
+type dailyLogRepository struct{}
 
-func NewDailyLogRepository(db *sql.DB) DailyLogRepository {
-	return &dailyLogRepository{db}
+func NewDailyLogRepository() DailyLogRepository {
+	return &dailyLogRepository{}
 }
 
 func (r *dailyLogRepository) FindWithPagination(tx *sql.Tx, size int, page int, search string, projectId int, fromDate string, toDate string, userId int, userRole int) ([]models.DailyLog, int, error) {
@@ -69,6 +67,7 @@ func (r *dailyLogRepository) FindWithPagination(tx *sql.Tx, size int, page int, 
 		index++
 	} else {
 		if userRole != 3 { // 3 is superadmin
+			// if not superadmin so fetch just project that created by user
 			paramQuery += " and p.created_by=$" + strconv.Itoa(index)
 			dataQuery = append(dataQuery, userId)
 			index++

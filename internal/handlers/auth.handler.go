@@ -51,7 +51,9 @@ func (h *AuthHandler) LoginWeb(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// username checking
 	userLogin, err := h.userRepo.FindByUsername(tx, loginInput.Username)

@@ -18,12 +18,10 @@ type UserRepository interface {
 	FindByUsername(tx *sql.Tx, username string) (models.User, error)
 }
 
-type userRepository struct {
-	db *sql.DB
-}
+type userRepository struct{}
 
-func NewUserRepository(db *sql.DB) UserRepository {
-	return &userRepository{db}
+func NewUserRepository() UserRepository {
+	return &userRepository{}
 }
 
 func (r *userRepository) FindWithPagination(tx *sql.Tx, size int, page int, search string, role string, toDate string, fromDate string) ([]models.User, int, error) {

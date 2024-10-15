@@ -64,14 +64,17 @@ func (h *DailyLogHandler) GetDailyLogsData(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// first check if project owner
 	_, err = h.projectRepo.FindByID(tx, projectId)
 	if err != nil {
 		// error handling this can happen if project not found or user is not project owner
 		if err == sql.ErrNoRows {
-			return utils.ErrorJSON(c, fiber.StatusNotFound, "Project not found")
+			err = fmt.Errorf("Project not found/ User is not project owner")
+			return utils.ErrorJSON(c, fiber.StatusNotFound, err.Error())
 		}
 
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
@@ -98,7 +101,9 @@ func (h *DailyLogHandler) GetProjectLogStats(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// check if projectowner
 	if _, err = h.projectRepo.FindByID(tx, projectID); err != nil {
@@ -144,7 +149,9 @@ func (h *DailyLogHandler) GetOneLogData(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// check if project owner
 	_, err = h.projectRepo.FindByID(tx, projectID)
@@ -217,7 +224,9 @@ func (h *DailyLogHandler) CreateDailyLog(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// check if today log already exist
 	checkLogToday, err := h.dailyLogRepo.FindByDate(tx, logInput.LogDate, projectID)
@@ -319,7 +328,9 @@ func (h *DailyLogHandler) UpdateDailyLog(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// check if project owner
 	if _, err := h.dailyLogRepo.FindIfProjectAndLogOwner(tx, projectID, logId, user.Id); err != nil {
@@ -394,7 +405,9 @@ func (h *DailyLogHandler) DeleteLog(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// check if user is project owner
 	log, err := h.dailyLogRepo.FindIfProjectAndLogOwner(tx, projectID, logId, user.Id)
@@ -438,7 +451,9 @@ func (h *DailyLogHandler) DeleteFileLog(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// find if log exist and the log is the owner of the project
 	log, err := h.dailyLogRepo.FindIfProjectAndLogOwner(tx, project_id, log_id, user.Id)

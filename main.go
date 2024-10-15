@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
@@ -22,9 +23,9 @@ func main() {
 	database.ConnectDB()
 	middleware.InitStore()
 	// repo init
-	userRepo := repository.NewUserRepository(database.DB)
-	projectRepo := repository.NewProjectRepository(database.DB)
-	dailyLogRepo := repository.NewDailyLogRepository(database.DB)
+	userRepo := repository.NewUserRepository()
+	projectRepo := repository.NewProjectRepository()
+	dailyLogRepo := repository.NewDailyLogRepository()
 
 	// handler init
 	userHandler := handlers.NewUserHandler(userRepo)
@@ -49,7 +50,7 @@ func main() {
 			urlSplit := strings.Split(url, "/")
 
 			if urlSplit[3] == string(utils.APIRequest) {
-				return utils.ErrorJSON(c, code, err.Error())
+				return utils.ErrorJSON(c, code, "sini handling: "+err.Error())
 			}
 
 			// if req from web endpoint return html error
@@ -63,6 +64,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(logger.New())
 	app.Use(helmet.New())
+	app.Use(recover.New()) // recover will catch panics like from handler and recover the panic and throw to fiber error handler
 	app.Static("/web", "./web")
 
 	// routing

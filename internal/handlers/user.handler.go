@@ -70,7 +70,9 @@ func (h *UserHandler) GetUsersData(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	users, total, err := h.userRepo.FindWithPagination(tx, perPage, page, searchQuery, role, toDate, fromDate)
 	if err != nil {
@@ -90,7 +92,9 @@ func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	check_user, err := h.userRepo.FindByID(tx, id)
 	if err != nil {
@@ -98,7 +102,8 @@ func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	}
 
 	if check_user.Id == 0 {
-		return utils.ErrorJSON(c, fiber.StatusBadRequest, "User not found")
+		err = fmt.Errorf("User not found")
+		return utils.ErrorJSON(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	return utils.RespondWithData(c, fiber.StatusOK, "Get User By ID", check_user)
@@ -129,7 +134,9 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	checkUser, err := h.userRepo.FindByUsername(tx, userInput.Username)
 	if (err != nil) && (err != sql.ErrNoRows) {
@@ -137,7 +144,8 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	}
 
 	if checkUser.Username != "" {
-		return utils.ErrorJSON(c, fiber.StatusBadRequest, "Username already exists")
+		err = fmt.Errorf("Username already exists")
+		return utils.ErrorJSON(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(userInput.Password), 16)
@@ -179,7 +187,9 @@ func (h *UserHandler) EditUserPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// not check if user exist or not here bcs it's already checked in middleware using IsSelf checker
 	// but still check user for get old pass data
@@ -237,7 +247,9 @@ func (h *UserHandler) EditUser(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	// check data user update
 	userUpdate, err := h.userRepo.FindByID(tx, userId)
@@ -281,7 +293,9 @@ func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ErrorJSON(c, fiber.StatusInternalServerError, err.Error())
 	}
-	defer utils.CommitOrRollback(tx, c)
+	defer func() {
+		utils.CommitOrRollback(tx, c, err)
+	}()
 
 	check_user, err := h.userRepo.FindByID(tx, id)
 	if err != nil {
@@ -289,7 +303,8 @@ func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
 	}
 
 	if check_user.Id == 0 {
-		return utils.ErrorJSON(c, fiber.StatusBadRequest, "User not found")
+		err = fmt.Errorf("User not found")
+		return utils.ErrorJSON(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	err = h.userRepo.SoftDelete(tx, id)

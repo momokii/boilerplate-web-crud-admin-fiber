@@ -18,12 +18,10 @@ type ProjectRepository interface {
 	FindProjectStatusStats(tx *sql.Tx, userId int) ([]models.ProjectStatusStats, error)
 }
 
-type projectRepository struct {
-	db *sql.DB
-}
+type projectRepository struct{}
 
-func NewProjectRepository(db *sql.DB) ProjectRepository {
-	return &projectRepository{db}
+func NewProjectRepository() ProjectRepository {
+	return &projectRepository{}
 }
 
 func (r *projectRepository) FindProjectStatusStats(tx *sql.Tx, userId int) ([]models.ProjectStatusStats, error) {
@@ -154,7 +152,7 @@ func (r *projectRepository) FindWithPagination(tx *sql.Tx, size int, page int, s
 	}
 
 	// if need separate by user like super admin can see all project
-	if userId != 0 {
+	if userId != 0 { // 0 is superadmin input from controller
 		paramQuery += " and created_by = $" + strconv.Itoa(index)
 		dataQuery = append(dataQuery, userId)
 		index++
